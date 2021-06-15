@@ -1,0 +1,291 @@
+@import url('fonts/Comfortaa/Comfortaa.css');
+@import url('fonts/VK-Sans-Display/VK-Sans-Display.css');
+
+:root {
+    /*Const colors*/
+    --dark-first: #010101;
+    --dark-second: #242424;
+    --dark-text-first: #A3A3A3;
+    --dark-text-second: #515151;
+    --dark-overlay: #4d4d4d80;
+    --dark-alt: #00529E;
+
+    --light-first: #fefefe;
+    --light-second: #E6E6E6;
+    --light-text-first: #232323;
+    --light-text-second: #B4B4B4;
+    --light-overlay: #d8d8d880;
+    --light-alt: #0C84FF;
+
+}
+
+html, body{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--first-color);
+    color: var(--first-text-color);
+    margin: 0;
+    padding: 0;
+	box-sizing: border-box;
+	scroll-behavior: smooth;
+    font-family: 'VK Sans Display';
+    user-select: none;
+}
+body{
+    transition: .3s;
+}
+body.light {
+    --first-color:var(--light-first);
+    --second-color:var(--light-second);
+    --first-text-color:var(--light-text-first);
+    --second-text-color:var(--light-text-second);
+    --overlay-color:var(--light-overlay);
+    --alt-color:var(--light-alt);
+}
+body.dark {
+    --first-color:var(--dark-first);
+    --second-color:var(--dark-second);
+    --first-text-color:var(--dark-text-first);
+    --second-text-color:var(--dark-text-second);
+    --overlay-color:var(--dark-overlay);
+    --alt-color:var(--dark-alt);
+}
+
+h1, h2, h3 {margin: 5px;}
+
+.popup {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background-color: var(--overlay-color);
+    z-index: 1337;
+}
+.popup .box {
+    background-color: var(--first-color);
+    border-radius: 10px;
+    z-index: 1448;
+    position: absolute;
+    font-size: 18px;
+    padding: 5px;
+    top: 50%; left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+.popup .box h1, .popup .box h2, .popup .box h3 {text-align: center; font-size: x-large;}
+
+
+/* Popups */
+/* ~~~Add dialog~~~ */
+#add_dial .box .wrapper {
+    display: flex; 
+    text-align: center;
+}
+#add_dial .box .wrapper * {
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    height: 25px;
+    padding: 3px 5px;
+}
+#add_dial .box .wrapper input {
+    border: var(--alt-color) solid 1px; 
+    background-color: #00000000;
+    color: var(--first-text-color);
+}
+#add_dial .box .wrapper input:focus {outline: none;}
+#add_dial .box .wrapper a {background-color: var(--alt-color); color: var(--first-color); width: 25px;}
+#add_dial .box .wrapper a:hover {opacity: 0.5;}
+
+/* ~~~Settings Dialog~~~ */
+#settings_dial .box {width: 60%;}
+#settings_dial .box .wrapper {padding: 5px;}
+#settings_dial .box .wrapper table {width: 100%;}
+#settings_dial td {padding: 5px;}
+#settings_dial td:first-child{vertical-align: top;}
+#settings_dial td:last-child{max-width: 75px;}
+#settings_dial td:nth-child(2) *{float: right;}
+#settings_dial #s_theme td a:last-child{display: flex;}
+#settings_dial #s_theme td a:last-child div:nth-child(1){color: var(--second-color);}
+#settings_dial #s_theme td a:last-child div:nth-child(2){color: var(--alt-color);}
+#settings_dial #s_theme td a:last-child div:nth-child(3){color: var(--first-text-color);}
+#settings_dial #s_theme td a:last-child div:nth-child(4){color: var(--second-text-color);}
+#settings_dial #s_clearall td {
+    vertical-align: middle;
+    height: 30px;
+}
+#settings_dial #s_clearall a {
+    padding: 5px 10px;
+    border: solid red 2px;
+    border-radius: 5px;
+    transition: .3s;
+}
+#settings_dial #s_clearall a.crit {
+    color: var(--first-color);
+    background-color: red;
+
+}
+#settings_dial #s_data td a {
+    padding: 3px 6px;
+    background-color: var(--second-color);
+    border-radius: 5px;
+    transition: .3s;
+}
+#settings_dial #s_data td a:last-child{margin-top: 3px;}
+#settings_dial #s_data td a.complete{
+    color: var(--first-color);
+    background-color: var(--alt-color);
+}
+#settings_dial #s_data td a.failed{
+    color: var(--first-color);
+    background-color: red;
+}
+/*-------------------------*/
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+}
+.switch input { 
+      display:none
+}
+  
+.switch .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--second-color);
+    border-radius: 40px;
+    transition: .3s;
+}
+.switch .slider:before {
+    position: absolute;
+    content: " ";
+    height: 14px;
+    width: 14px;
+    left: 6px;
+    bottom: 7px;
+    background-color: var(--first-color);
+    border-radius: 50%;
+    transition: .3s;
+}
+.switch input:checked + .slider {
+    background-color: var(--alt-color);
+}
+.switch input:checked + .slider:before {
+    transform: translateX(26px);
+}
+.dark .switch .slider:before{
+    background-color: var(--second-text-color);
+}
+.dark .switch input:checked + .slider:before {
+    background-color: var(--first-text-color);
+}
+
+header {
+    display: flex;
+    padding: 5px;
+    color: var(--second-text-color);
+    text-align: center;
+    font-family: 'Comfortaa';
+    font-size: 10px;
+    position: relative;
+}
+header svg {
+    height: 30px;
+    stroke: var(--second-text-color);
+    fill: var(--second-text-color);
+}
+/*header nav {margin: auto;}
+header nav a {
+    margin-right: 30px;
+}
+header nav a:last-child {
+    margin-right: 0;
+}
+header nav a.active svg{
+    fill: var(--alt-color);
+    stroke: var(--alt-color);
+}*/
+header h1 {margin: 5px auto;}
+header .settings {
+    position: absolute;
+    right: 5px;
+}
+header .settings svg {fill: var(--first-text-color) !important;}
+
+main, ul {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    height: calc(100% - 10px * 4) /* <--------- FREAKING HERE */
+}
+main ul {
+    list-style-type: none;
+    overflow-y: scroll;
+    height: 100%;
+}
+main ul li {
+    cursor: pointer;
+    position: relative;
+    margin: 5px 10px;
+    padding: 10px 5px;
+    font-size: 18px;
+    border-top: 1px solid var(--second-color);
+}
+main ul li:active {box-shadow: none}
+main ul li.complete {
+    color: var(--second-color);
+    text-decoration: line-through;
+}
+main ul li span {
+    float: right;
+    text-align: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%; 
+    color: var(--delete-color);
+}
+main ul li.complete span{
+    color:#f00;
+    opacity: 0.5;
+}
+main ul li span:active {background-color: var(--second-color);}
+
+footer{ 
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    bottom: 5%;
+}
+footer a {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+footer svg {
+    fill: var(--alt-color);
+    margin: 0 auto;
+    display: block;
+    height: 40px;
+}
+footer a.add{
+    color: var(--alt-color);
+    text-decoration: none;
+    font-style: normal;
+    font-size: 30px;
+    border-radius: 50%;
+}
+.light footer a.add {
+    box-shadow: 0 0 50px -15px #000;
+}
+.dark footer a.add {
+    box-shadow: none;
+    background-color: var(--second-color);
+}
+footer a:active{background-color: var(--second-color);}
