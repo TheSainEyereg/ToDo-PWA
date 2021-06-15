@@ -1,7 +1,7 @@
 {
     "name": "ToDo",
     "short_name": "ToDo",
-    "start_url": "https://olejka.ru/p/todo/",
+    "start_url": "https://todo.olejka.ru/",
     "icons": [
         {
             "src": "icons/manifest-icon-192.png",

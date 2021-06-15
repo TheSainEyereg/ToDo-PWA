@@ -1,22 +1,27 @@
 const info = {
-    build: '110521',
-    version: 4
-}
+    build: '150621',
+    version: 1
+};
+if (window.location.host == "localhost") document.title = "ToDo PWA Dev";
 
-debug_default = false;
-debug_time = true;
-theme_auto = true;
+const debug_default = false;
+const debug_time = true;
+const theme_auto = true;
+const el = document.querySelector.bind(document);
+function ready(callback) {
+    document.addEventListener("DOMContentLoaded", _=> {
+        debug.log("DOM loaded", "#fff","#000");
+        if (typeof callback != "undefined") callback();
+        theme.initializate();
+    });
+};
 
-let d = document;
-let w = window;
-
-if (w.location.host == "localhost") d.title = "ToDo PWA Dev";
 
 const debug = {
     enabled: null,
-    init() {
-        this.enabled = localStorage.getItem('debug') === 'true';
-        if (localStorage.getItem('debug')) {
+    initializate() {
+        this.enabled = localStorage.getItem("debug") === "true";
+        if (localStorage.getItem("debug")) {
             this.set(this.enabled);
         } else {
             this.set(debug_default);
@@ -24,12 +29,12 @@ const debug = {
     },
     set(arg) { //true or false
         this.enabled = arg;
-        localStorage.setItem('debug', this.enabled);
-        debug.log('Set debug to ' + this.enabled, '#00c800');
+        localStorage.setItem("debug", this.enabled);
+        debug.log(`Set debug to ${this.enabled}`, "#00c800");
     },
     log(text, color, background) {
         if (this.enabled) {
-            let out = '';
+            let out = "";
             if (debug_time) {
                 let date = new Date;
                 out += `[${date.getMinutes()}:${date.getSeconds()}:${date.getMilliseconds()}]:`;
@@ -43,23 +48,23 @@ const debug = {
 const theme = {
     current: null,
     auto: true,
-    user: w.matchMedia('(prefers-color-scheme: dark)'),
-    init() {
-        this.auto = localStorage.getItem('todo-theme_auto') === 'true';
-        if (localStorage.getItem('todo-theme_auto')) {
+    user: window.matchMedia("(prefers-color-scheme: dark)"),
+    initializate() {
+        this.auto = localStorage.getItem("theme_auto") === "true";
+        if (localStorage.getItem("theme_auto")) {
             this.autoset(this.auto);
         } else {
             this.autoset(theme_auto);
         }
         const usercheck = _ => {
             if (theme.user.matches) {
-                this.set('dark');
+                this.set("dark");
             } else {
-                this.set('light');
+                this.set("light");
             }
         }
-        this.current = localStorage.getItem('todo-theme');
-        if ((this.current != 'dark') && (this.current != 'light')) {
+        this.current = localStorage.getItem("theme");
+        if ((this.current != "dark") && (this.current != "light")) {
             usercheck();
         } else {
             if (this.auto) usercheck(); else this.set(this.current);
@@ -68,70 +73,94 @@ const theme = {
     },
     autoset(arg) { //true or false
         this.auto = arg;
-        localStorage.setItem('todo-theme_auto', this.auto);
-        debug.log('Set auto theme to ' + this.auto, '#00c800');
+        localStorage.setItem("theme_auto", this.auto);
+        debug.log("Set auto theme to " + this.auto, "#00c800");
     },
     set(arg) {
+        document.body.classList.remove(this.current);
         this.current = arg;
-        $('body').removeClass();
-        $('body').addClass(this.current);
-        localStorage.setItem('todo-theme', this.current);
-        debug.log('Set theme to ' + this.current, '#00c800');
-        $("meta[name='theme-color']").attr('content', $(':root').css(`--${this.current}-first`));
+        document.body.classList.add(this.current);
+        document.querySelector(`meta[name="theme-color"]`).setAttribute("content",  getComputedStyle(document.body).getPropertyValue(`--${this.current}-first`));
+        localStorage.setItem("theme", this.current);
+        debug.log("Set theme to " + arg, "#00c800");
     },
     change() {
-        if (this.current == 'light') {
-            this.set('dark');
-        } else {
-            this.set('light');
+        switch (this.current) {
+            case "light":
+                this.set("dark");
+                break;
+
+            default:
+                this.set("light");
+                break;
         }
     }
 };
 
 const anim = {
-    show(element, interval, timeout) {
+    show(id, interval, timeout) {
         setTimeout(() => {
+            const element = document.getElementById(id);
             let op = 0;
-            debug.log('Showing up '+element[0].id, '#226dc9'); //Мусор с моего вебсайта (Хотя я бы дебаг интегрировал)
+            debug.log(`Showing up ${id}`, "#226dc9");
             let timer = setInterval(() => {
                 if (op >= 1){
                     clearInterval(timer);
-                    debug.log('Showing up for '+element[0].id+' complete', '#00c800');
+                    debug.log(`Showing up for ${id} complete`, "#00c800");
                 }
-                element.css('opacity', op);
+                element.style.opacity = op;
                 op+=0.01;
             }, interval/100);
         }, timeout);
     },
+    text: {
+        anim(id, text, time) {
+            const tick = time/text.length;
+            const element = document.getElementById(id);
+            const chars = "@#$%&/\\|;";
+            let string ="";
+            let i = 0;
+            function render() {
+                if (i < text.length) {
+                    string+=text[i];
+                    element.innerHTML = string+chars[Math.floor(Math.random()*chars.length)];
+                    if (i==text.length-1) element.innerHTML = string;
+                    i++;
+                } else return
+                setTimeout(render, tick);
+            }
+            render();
+        }
+    },
     title: {
         timer(ticks, time, timeout) {
             setTimeout(() => {
-                let tick = time/ticks;
+                const tick = time/ticks;
                 let cur = ticks;
-                debug.log('Title counter started for '+ticks+' ticks every '+tick+'ms', '#226dc9');
+                debug.log(`Title counter started for ${tick} ticks every ${tick}ms`, "#226dc9");
                 let timer = setInterval(() => {
                     if (cur <= 0) {
                         clearInterval(timer);
-                        debug.log('Title counter complete', '#00c800');
+                        debug.log("Title counter complete", "#00c800");
                     }
-                    d.title = cur;
-                    cur--;
-                }, tick)
-            },timeout)
+                    document.title = cur;
+                    cur--
+                }, tick);
+            },timeout);
         },
         anim(text, time, timeout) {
             setTimeout(() => {
-                let tick = time/text.length;
-                let cur = 0;
-                let title = '';
-                debug.log('Title animation started for \''+text+'\' every '+tick+'ms', '#226dc9');
-                let timer = setInterval (() => { //still hate 'for (let v of text) {};'
+                const tick = time/text.length;
+                let cur = 0
+                let title = ""
+                debug.log(`Title animation started for "${text}" every ${tick}ms`, "#226dc9");
+                let timer = setInterval (() => { //still hate "for (let v of text) {};"
                     if (cur >= text.length-1) {
                         clearInterval(timer);
-                        debug.log('Title animation complete', '#00c800');
+                        debug.log("Title animation complete", "#00c800");
                     }
                     title = title + text[cur];
-                    d.title = title;
+                    document.title = title;
                     cur++;
                 }, tick);
             }, timeout);
@@ -141,7 +170,7 @@ const anim = {
 
 const list = {
     data: [],
-    init() {
+    initializate() {
         if (!localStorage.getItem('list')) return localStorage.setItem('list', JSON.stringify(this.data));
         this.data = JSON.parse(localStorage.getItem('list'));
         debug.log(`Task init`);
@@ -149,28 +178,24 @@ const list = {
     },
     update() {
         localStorage.setItem('list', JSON.stringify(this.data));
-        $('#todoList').children().remove();
+        el('#todoList').innerHTML = "";
         debug.log(`Started updating for ${this.data.length} tasks`);
         debug.log(`-----------------------`);
         for (let i in this.data) {
-            let task = $('<li></li>');
-            task.html(`${this.data[i].task}<span tid="${i}" id="delete">×</span>`);
-            if (this.data[i].complete == true) task.addClass('complete');
-            debug.log(`Added "${task.text()}" task, complete: ${this.data[i].complete}, tid: ${i}`);
-            $('#todoList').prepend(task);
+            const task = document.createElement("li");
+            task.innerHTML = `${this.data[i].task}<span tid="${i}" id="delete">×</span>`;
+            if (this.data[i].complete == true) task.classList.add('complete');
+            debug.log(`Added "${task.innerText}" task, complete: ${this.data[i].complete}, tid: ${i}`);
+            el('#todoList').prepend(task);
+            task.onclick = e => {this.complete(e.target)}
+            task.children[0].onclick = e => {this.delete(e.target)}
         };
         debug.log(`-----------------------`);
-        $('#todoList').children().on('click', a => {
-            this.complete($(a.target));
-        });
-        $('#todoList').children().children().on('click', a => {
-            this.delete($(a.target));
-        });
-        debug.log(`Added events`);
     },
     add() {
-        let task = $('#add_dial #textField').val();
-        $('#add_dial #textField').val('');
+        if (!el('#add_dial #textField')) return debug.log("No add dialog!", "red")
+        const task = el('#add_dial #textField').value;
+        el('#add_dial #textField').value = "";
         popup.close('add');
         if (!task) return //alert('Введите имя задачи.')
         this.data.push({"task": task, "complete": false});
@@ -178,19 +203,20 @@ const list = {
         this.update();
     },
     delete(el) {
-        let tid = el.attr('tid');
+        const tid = el.getAttribute('tid');
         this.data.splice(tid,1);
         debug.log(`Deleted id${tid} task`);
         this.update();
     },
     complete(el) {
-        let tid = parseInt($(el.children()).attr('tid'));
-        if (!el.hasClass('complete')) {
-            el.addClass('complete');
+        if(!el.children[0]) return
+        const tid = parseInt(el.children[0].getAttribute('tid'));
+        if (!el.classList.contains('complete')) {
+            el.classList.add('complete');
             this.data[tid].complete = true;
             debug.log(`Complete id${tid} task`);
         } else {
-            el.removeClass('complete');
+            el.classList.remove('complete');
             this.data[tid].complete = false;
             debug.log(`Uncomplete id${tid} task`);
         };
@@ -198,34 +224,37 @@ const list = {
     }
 };
 
-const popup ={
+const popup = {
     show(id, content)  {
-        divId = `${id}_dial`;
+        const divId = `${id}_dial`;
         if (content) {
-            if ($(`#${divId}`)[0]) return debug.log(`Popup with id="${id}" already exists!`, 'red');
-            let popup = $(`<div id="${divId}" class="popup"></div>`);
-            let box = $('<div class="box"></div>');
-            box.html(content);
+            if (el(`#${divId}`)) return debug.log(`Popup with id="${id}" already exists!`, 'red');
+            const popup = document.createElement("div");
+            popup.classList.add("popup");
+            popup.id = divId;
+            const box = document.createElement("div");
+            box.classList.add("box")
+            box.innerHTML = content;
     
             popup.append(box);
-            $('body').append(popup);
-            anim.show($(`#${divId}`), 1, 0);
+            document.body.append(popup);
+            anim.show(divId, 1, 0);
     
             //click outside detection
-            $('.popup .box').on('click', _ => {
-                $('.popup .box').data('clicked', '1');
-            });
-            $('.popup').on('click', _ => {
-                let clicked = ($('.popup .box').data('clicked') == '1');
+            el('.popup .box').onclick = _ => {
+                el('.popup .box').dataset.clicked = 1;
+            };
+            el('.popup').onclick = _ => {
+                const clicked = (el('.popup .box').dataset.clicked == 1);
                 debug.log(clicked);
+                el('.popup .box').dataset.clicked = 0;
                 if (!clicked) this.close(id);
-                $('.popup .box').data('clicked', '0');
-            });
+            };
         } else return debug.log(`No content given`, 'red');
     },
     close(id) {
         divId = `${id}_dial`;
-        if($(`#${divId}`)[0]) $(`#${divId}`).remove();
+        if(el(`#${divId}`)) el(`#${divId}`).remove();
         else return debug.log(`No popup window with id="${id}"`, 'red');
 
     }
@@ -241,7 +270,7 @@ const menus = {
         </div>
         `;
         popup.show('add', html);
-        $('#add_dial #textField').focus();
+        el('#add_dial #textField').focus();
     },
     settings() {
         const html = `
@@ -287,93 +316,95 @@ const menus = {
         `;
         popup.show('settings', html);
 
-        let sw = $('#s_autotheme input');
-        sw.prop('checked', theme.auto);
-        sw.click(_ => {
-            theme.autoset(sw.is(':checked'));
-        });
+        let sw = el('#s_autotheme input');
+        sw.checked = theme.auto;
+        sw.onclick =_ => {
+            theme.autoset(sw.checked);
+        };
 
-        let exb = $('#settings_dial #s_data a#export');
-        exb.on('click', _ => {
-            let form = $('<input type="text" id="copyPlace">')
-            $('#settings_dial #s_data').append(form);
-            form.val(JSON.stringify(list.data));
+        let exb = el('#settings_dial #s_data a#export');
+        exb.onclick = _ => {
+            const form = document.createElement("input");
+            form.setAttribute("type", "text");
+            form.id = "copyPlace";
+            document.body.append(form);
+            form.value = JSON.stringify(list.data);
             form.select();
             document.execCommand("copy");
             form.remove();
-            exb.addClass('complete');
-            exb.text('Copied!');
+            exb.classList.add('complete');
+            exb.innerText = 'Copied!';
             debug.log('Exported data to clipboard!', '#00c800')
             alert('Copied data to clipbord!\nMake sure you saved it to safe place!')
             setTimeout(_ => {
-                exb.removeClass('complete');
-                exb.text('Export');
+                exb.classList.remove('complete');
+                exb.innerText = 'Export';
             }, 1500)
-        });
-        let inb = $('#settings_dial #s_data a#import');
-        inb.on('click', _ => {
+        };
+        let inb = el('#settings_dial #s_data a#import');
+        inb.onclick = _ => {
             let input = prompt('Enter exported value');
             if (input == null || input.length == 0) return debug.log('Nothing was entered', 'red')
             try {
                 let data = JSON.parse(input);
                 list.data = data;
                 list.update();
-                inb.addClass('complete');
-                inb.text('Restored!');
+                inb.classList.add('complete');
+                inb.innerText = 'Restored!';
                 debug.log('Imported data successfully!', '#00c800');
                 console.log(data);
             } catch (e) {
                 alert(`Error occured:\n${e}`);
-                inb.addClass('failed');
-                inb.text('Error!');
+                inb.classList.add('failed');
+                inb.innerText = 'Error!';
                 debug.log('Error at data import!', 'red');
                 console.error(e);
             }
             setTimeout(_ => {
-                inb.removeClass('failed');
-                inb.removeClass('complete');
-                inb.text('Import');
+                inb.classList.remove('failed');
+                inb.classList.remove('complete');
+                inb.innerText = 'Import';
             }, 1500);
-        });
+        };
 
-        let rall = $('#settings_dial #s_clearall a');
-        rall.click(_ => {
-            if (!rall.hasClass('crit')) {
-                rall.addClass('crit');
-                rall.text('Are you sure?');
+        let rall = el('#settings_dial #s_clearall a');
+        rall.onclick = _ => {
+            if (!rall.classList.contains('crit')) {
+                rall.classList.add('crit');
+                rall.innerText = 'Are you sure?';
             } else {
                 list.data = [];
                 list.update();
-                rall.text('Cleared!');
+                rall.innerText = 'Cleared!';
                 setTimeout(_ => {
-                    rall.removeClass('crit');
-                    rall.text('Clear all tasks');
+                    rall.classList.remove('crit');
+                    rall.innerText = 'Clear all tasks';
                 }, 1500);
             };
-        });
+        };
     },
 
 };
 
-$(_ => {
+debug.initializate();
+debug.log('Build '+info.build+'v'+info.version, '#fff','#000');
+ready(_ => {
     debug.log('DOM loaded', '#fff','#000');
 
-    list.init();
-    theme.init();
+    list.initializate();
+    theme.initializate();
 
-    $(d).bind('keypress', e => {
+    document.onkeypress = e => {
         if(e.keyCode==13) {
             debug.log('Pressed enter');
             list.add();
         };
-    });
+    };
 
-    $(w).on('resize', _ => {
-        let width = $(w).width();
-        let height = $(w).height();
-        if (width < 500) w.resizeTo(500, height);
-        if (height < 750) w.resizeTo(width, 750);
-    })
+    window.onresize = _ => {
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        if (width < 500) window.resizeTo(500, height);
+        if (height < 750) window.resizeTo(width, 750);
+    }
 });
-debug.init();
-debug.log('Build '+info.build+'v'+info.version, '#fff','#000');

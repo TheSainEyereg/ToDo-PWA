@@ -61,12 +61,12 @@ h1, h2, h3 {margin: 5px;}
     height: 100%;
     opacity: 0;
     background-color: var(--overlay-color);
-    z-index: 1337;
+    z-index: 1000;
 }
 .popup .box {
     background-color: var(--first-color);
     border-radius: 10px;
-    z-index: 1448;
+    z-index: 1001;
     position: absolute;
     font-size: 18px;
     padding: 5px;
@@ -262,6 +262,7 @@ footer{
     position: absolute;
     left: 50%; transform: translateX(-50%);
     bottom: 5%;
+    z-index: 999;
 }
 footer a {
   display: flex;

@@ -4,7 +4,6 @@ const assets = [
   './index.html',
   './assets/main.js',
   './assets/style.css',
-  './assets/jquery-3.5.1.min.js',
   './assets/fonts/VK-Sans-Display/VK-Sans-Display.css',
   './assets/fonts/VK-Sans-Display/VK-Sans-Display.woff2',
   './assets/fonts/Comfortaa/Comfortaa.css',
