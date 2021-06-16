@@ -2,17 +2,17 @@ const info = {
     build: "160621",
     version: 1
 };
-if (window.location.host == "localhost") document.title = "ToDo PWA Dev";
+if (window.location.host.includes("localhost")) document.title = "ToDo PWA Dev";
 
 const debug_default = false;
 const debug_time = true;
 const theme_auto = true;
+
 const el = document.querySelector.bind(document);
 function ready(callback) {
     document.addEventListener("DOMContentLoaded", _=> {
         debug.log("DOM loaded", "#fff","#000");
         if (typeof callback != "undefined") callback();
-        theme.initializate();
     });
 };
 
@@ -97,83 +97,12 @@ const theme = {
     }
 };
 
-const anim = {
-    show(id, interval, timeout) {
-        setTimeout(() => {
-            const element = document.getElementById(id);
-            let op = 0;
-            debug.log(`Showing up ${id}`, "#226dc9");
-            let timer = setInterval(() => {
-                if (op >= 1){
-                    clearInterval(timer);
-                    debug.log(`Showing up for ${id} complete`, "#00c800");
-                }
-                element.style.opacity = op;
-                op+=0.01;
-            }, interval/100);
-        }, timeout);
-    },
-    text: {
-        anim(id, text, time) {
-            const tick = time/text.length;
-            const element = document.getElementById(id);
-            const chars = "@#$%&/\\|;";
-            let string ="";
-            let i = 0;
-            function render() {
-                if (i < text.length) {
-                    string+=text[i];
-                    element.innerHTML = string+chars[Math.floor(Math.random()*chars.length)];
-                    if (i==text.length-1) element.innerHTML = string;
-                    i++;
-                } else return
-                setTimeout(render, tick);
-            }
-            render();
-        }
-    },
-    title: {
-        timer(ticks, time, timeout) {
-            setTimeout(() => {
-                const tick = time/ticks;
-                let cur = ticks;
-                debug.log(`Title counter started for ${tick} ticks every ${tick}ms`, "#226dc9");
-                let timer = setInterval(() => {
-                    if (cur <= 0) {
-                        clearInterval(timer);
-                        debug.log("Title counter complete", "#00c800");
-                    }
-                    document.title = cur;
-                    cur--
-                }, tick);
-            },timeout);
-        },
-        anim(text, time, timeout) {
-            setTimeout(() => {
-                const tick = time/text.length;
-                let cur = 0
-                let title = ""
-                debug.log(`Title animation started for "${text}" every ${tick}ms`, "#226dc9");
-                let timer = setInterval (() => { //still hate "for (let v of text) {};"
-                    if (cur >= text.length-1) {
-                        clearInterval(timer);
-                        debug.log("Title animation complete", "#00c800");
-                    }
-                    title = title + text[cur];
-                    document.title = title;
-                    cur++;
-                }, tick);
-            }, timeout);
-        }
-    }
-};
-
 const list = {
     data: [],
     initializate() {
         if (!localStorage.getItem("list")) return localStorage.setItem("list", JSON.stringify(this.data));
         this.data = JSON.parse(localStorage.getItem("list"));
-        debug.log(`Task init`);
+        debug.log(`Task initialization`);
         this.update();
     },
     update() {
@@ -238,16 +167,16 @@ const popup = {
     
             popup.append(box);
             document.body.append(popup);
-            anim.show(divId, 1, 0);
+            //anim.show(divId, 1, 0);
     
             //click outside detection
-            el(".popup .box").onclick = _ => {
-                el(".popup .box").dataset.clicked = 1;
+            box.onclick = _ => {
+                box.dataset.clicked = 1;
             };
-            el(".popup").onclick = _ => {
-                const clicked = (el(".popup .box").dataset.clicked == 1);
+            popup.onclick = e => {
+                const clicked = (box.dataset.clicked == 1);
                 debug.log(clicked);
-                el(".popup .box").dataset.clicked = 0;
+                box.dataset.clicked = 0;
                 if (!clicked) this.close(id);
             };
         } else return debug.log(`No content given`, "red");
@@ -389,8 +318,6 @@ const menus = {
 debug.initializate();
 debug.log("Build "+info.build+"v"+info.version, "#fff","#000");
 ready(_ => {
-    debug.log("DOM loaded", "#fff","#000");
-
     list.initializate();
     theme.initializate();
 
