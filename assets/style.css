@@ -276,6 +276,7 @@ footer svg {
     height: 40px;
 }
 footer a.add{
+    background: var(--first-color);
     color: var(--alt-color);
     text-decoration: none;
     font-style: normal;
