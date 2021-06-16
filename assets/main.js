@@ -1,5 +1,5 @@
 const info = {
-    build: '150621',
+    build: "160621",
     version: 1
 };
 if (window.location.host == "localhost") document.title = "ToDo PWA Dev";
@@ -171,52 +171,52 @@ const anim = {
 const list = {
     data: [],
     initializate() {
-        if (!localStorage.getItem('list')) return localStorage.setItem('list', JSON.stringify(this.data));
-        this.data = JSON.parse(localStorage.getItem('list'));
+        if (!localStorage.getItem("list")) return localStorage.setItem("list", JSON.stringify(this.data));
+        this.data = JSON.parse(localStorage.getItem("list"));
         debug.log(`Task init`);
         this.update();
     },
     update() {
-        localStorage.setItem('list', JSON.stringify(this.data));
-        el('#todoList').innerHTML = "";
+        localStorage.setItem("list", JSON.stringify(this.data));
+        el("#todoList").innerHTML = "";
         debug.log(`Started updating for ${this.data.length} tasks`);
         debug.log(`-----------------------`);
         for (let i in this.data) {
             const task = document.createElement("li");
             task.innerHTML = `${this.data[i].task}<span tid="${i}" id="delete">×</span>`;
-            if (this.data[i].complete == true) task.classList.add('complete');
+            if (this.data[i].complete == true) task.classList.add("complete");
             debug.log(`Added "${task.innerText}" task, complete: ${this.data[i].complete}, tid: ${i}`);
-            el('#todoList').prepend(task);
+            el("#todoList").prepend(task);
             task.onclick = e => {this.complete(e.target)}
             task.children[0].onclick = e => {this.delete(e.target)}
         };
         debug.log(`-----------------------`);
     },
     add() {
-        if (!el('#add_dial #textField')) return debug.log("No add dialog!", "red")
-        const task = el('#add_dial #textField').value;
-        el('#add_dial #textField').value = "";
-        popup.close('add');
-        if (!task) return //alert('Введите имя задачи.')
+        if (!el("#add_dial #textField")) return debug.log("No add dialog!", "red")
+        const task = el("#add_dial #textField").value;
+        el("#add_dial #textField").value = "";
+        popup.close("add");
+        if (!task) return //alert("Введите имя задачи.")
         this.data.push({"task": task, "complete": false});
         debug.log(`Added "${task}" task`);
         this.update();
     },
     delete(el) {
-        const tid = el.getAttribute('tid');
+        const tid = el.getAttribute("tid");
         this.data.splice(tid,1);
         debug.log(`Deleted id${tid} task`);
         this.update();
     },
     complete(el) {
         if(!el.children[0]) return
-        const tid = parseInt(el.children[0].getAttribute('tid'));
-        if (!el.classList.contains('complete')) {
-            el.classList.add('complete');
+        const tid = parseInt(el.children[0].getAttribute("tid"));
+        if (!el.classList.contains("complete")) {
+            el.classList.add("complete");
             this.data[tid].complete = true;
             debug.log(`Complete id${tid} task`);
         } else {
-            el.classList.remove('complete');
+            el.classList.remove("complete");
             this.data[tid].complete = false;
             debug.log(`Uncomplete id${tid} task`);
         };
@@ -228,7 +228,7 @@ const popup = {
     show(id, content)  {
         const divId = `${id}_dial`;
         if (content) {
-            if (el(`#${divId}`)) return debug.log(`Popup with id="${id}" already exists!`, 'red');
+            if (el(`#${divId}`)) return debug.log(`Popup with id="${id}" already exists!`, "red");
             const popup = document.createElement("div");
             popup.classList.add("popup");
             popup.id = divId;
@@ -241,21 +241,21 @@ const popup = {
             anim.show(divId, 1, 0);
     
             //click outside detection
-            el('.popup .box').onclick = _ => {
-                el('.popup .box').dataset.clicked = 1;
+            el(".popup .box").onclick = _ => {
+                el(".popup .box").dataset.clicked = 1;
             };
-            el('.popup').onclick = _ => {
-                const clicked = (el('.popup .box').dataset.clicked == 1);
+            el(".popup").onclick = _ => {
+                const clicked = (el(".popup .box").dataset.clicked == 1);
                 debug.log(clicked);
-                el('.popup .box').dataset.clicked = 0;
+                el(".popup .box").dataset.clicked = 0;
                 if (!clicked) this.close(id);
             };
-        } else return debug.log(`No content given`, 'red');
+        } else return debug.log(`No content given`, "red");
     },
     close(id) {
-        divId = `${id}_dial`;
+        const divId = `${id}_dial`;
         if(el(`#${divId}`)) el(`#${divId}`).remove();
-        else return debug.log(`No popup window with id="${id}"`, 'red');
+        else return debug.log(`No popup window with id="${id}"`, "red");
 
     }
 };
@@ -269,8 +269,8 @@ const menus = {
             <a onclick="list.add()">✔</a>
         </div>
         `;
-        popup.show('add', html);
-        el('#add_dial #textField').focus();
+        popup.show("add", html);
+        el("#add_dial #textField").focus();
     },
     settings() {
         const html = `
@@ -314,15 +314,15 @@ const menus = {
             </table>
         </div>
         `;
-        popup.show('settings', html);
+        popup.show("settings", html);
 
-        let sw = el('#s_autotheme input');
+        const sw = el("#s_autotheme input");
         sw.checked = theme.auto;
         sw.onclick =_ => {
             theme.autoset(sw.checked);
         };
 
-        let exb = el('#settings_dial #s_data a#export');
+        const exb = el("#settings_dial #s_data a#export");
         exb.onclick = _ => {
             const form = document.createElement("input");
             form.setAttribute("type", "text");
@@ -332,53 +332,53 @@ const menus = {
             form.select();
             document.execCommand("copy");
             form.remove();
-            exb.classList.add('complete');
-            exb.innerText = 'Copied!';
-            debug.log('Exported data to clipboard!', '#00c800')
-            alert('Copied data to clipbord!\nMake sure you saved it to safe place!')
+            exb.classList.add("complete");
+            exb.innerText = "Copied!";
+            debug.log("Exported data to clipboard!", "#00c800")
+            alert("Copied data to clipbord!\nMake sure you saved it to safe place!")
             setTimeout(_ => {
-                exb.classList.remove('complete');
-                exb.innerText = 'Export';
+                exb.classList.remove("complete");
+                exb.innerText = "Export";
             }, 1500)
         };
-        let inb = el('#settings_dial #s_data a#import');
+        let inb = el("#settings_dial #s_data a#import");
         inb.onclick = _ => {
-            let input = prompt('Enter exported value');
-            if (input == null || input.length == 0) return debug.log('Nothing was entered', 'red')
+            const input = prompt("Enter exported value");
+            if (input == null || input.length == 0) return debug.log("Nothing was entered", "red")
             try {
                 let data = JSON.parse(input);
                 list.data = data;
                 list.update();
-                inb.classList.add('complete');
-                inb.innerText = 'Restored!';
-                debug.log('Imported data successfully!', '#00c800');
+                inb.classList.add("complete");
+                inb.innerText = "Restored!";
+                debug.log("Imported data successfully!", "#00c800");
                 console.log(data);
             } catch (e) {
                 alert(`Error occured:\n${e}`);
-                inb.classList.add('failed');
-                inb.innerText = 'Error!';
-                debug.log('Error at data import!', 'red');
+                inb.classList.add("failed");
+                inb.innerText = "Error!";
+                debug.log("Error at data import!", "red");
                 console.error(e);
             }
             setTimeout(_ => {
-                inb.classList.remove('failed');
-                inb.classList.remove('complete');
-                inb.innerText = 'Import';
+                inb.classList.remove("failed");
+                inb.classList.remove("complete");
+                inb.innerText = "Import";
             }, 1500);
         };
 
-        let rall = el('#settings_dial #s_clearall a');
+        let rall = el("#settings_dial #s_clearall a");
         rall.onclick = _ => {
-            if (!rall.classList.contains('crit')) {
-                rall.classList.add('crit');
-                rall.innerText = 'Are you sure?';
+            if (!rall.classList.contains("crit")) {
+                rall.classList.add("crit");
+                rall.innerText = "Are you sure?";
             } else {
                 list.data = [];
                 list.update();
-                rall.innerText = 'Cleared!';
+                rall.innerText = "Cleared!";
                 setTimeout(_ => {
-                    rall.classList.remove('crit');
-                    rall.innerText = 'Clear all tasks';
+                    rall.classList.remove("crit");
+                    rall.innerText = "Clear all tasks";
                 }, 1500);
             };
         };
@@ -387,23 +387,23 @@ const menus = {
 };
 
 debug.initializate();
-debug.log('Build '+info.build+'v'+info.version, '#fff','#000');
+debug.log("Build "+info.build+"v"+info.version, "#fff","#000");
 ready(_ => {
-    debug.log('DOM loaded', '#fff','#000');
+    debug.log("DOM loaded", "#fff","#000");
 
     list.initializate();
     theme.initializate();
 
     document.onkeypress = e => {
-        if(e.keyCode==13) {
-            debug.log('Pressed enter');
+        if(e.key == "Enter") {
+            debug.log("Pressed enter");
             list.add();
         };
     };
 
     window.onresize = _ => {
-        let width = window.innerWidth;
-        let height = window.innerHeight;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
         if (width < 500) window.resizeTo(500, height);
         if (height < 750) window.resizeTo(width, 750);
     }
