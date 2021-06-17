@@ -112,34 +112,34 @@ const list = {
         debug.log(`-----------------------`);
         for (let i in this.data) {
             const task = document.createElement("li");
-            task.innerHTML = `${this.data[i].task}<span tid="${i}" id="delete">×</span>`;
+            task.dataset.tid = i;
+            task.innerHTML = `<span>${this.data[i].task}</span> <span class="delete">×</span>`;
             if (this.data[i].complete == true) task.classList.add("complete");
-            debug.log(`Added "${task.innerText}" task, complete: ${this.data[i].complete}, tid: ${i}`);
+            debug.log(`Added "${this.data[i].task}" task, complete: ${this.data[i].complete}, tid: ${i}`);
             el("#todoList").prepend(task);
-            task.onclick = e => {this.complete(e.target)}
-            task.children[0].onclick = e => {this.delete(e.target)}
+            task.children[0].onclick = e => {this.complete(e.target.parentElement)};
+            task.children[1].onclick = e => {this.delete(e.target.parentElement)};
         };
         debug.log(`-----------------------`);
     },
     add() {
-        if (!el("#add_dial #textField")) return debug.log("No add dialog!", "red")
+        if (!el("#add_dial #textField")) return debug.log("No add dialog!", "red");
         const task = el("#add_dial #textField").value;
         el("#add_dial #textField").value = "";
         popup.close("add");
-        if (!task) return //alert("Введите имя задачи.")
+        if (!task) return //alert("Введите имя задачи.");
         this.data.push({"task": task, "complete": false});
         debug.log(`Added "${task}" task`);
         this.update();
     },
     delete(el) {
-        const tid = el.getAttribute("tid");
+        const tid = el.dataset.tid;
         this.data.splice(tid,1);
         debug.log(`Deleted id${tid} task`);
         this.update();
     },
     complete(el) {
-        if(!el.children[0]) return
-        const tid = parseInt(el.children[0].getAttribute("tid"));
+        const tid = el.dataset.tid;
         if (!el.classList.contains("complete")) {
             el.classList.add("complete");
             this.data[tid].complete = true;
@@ -167,7 +167,6 @@ const popup = {
     
             popup.append(box);
             document.body.append(popup);
-            //anim.show(divId, 1, 0);
     
             //click outside detection
             box.onclick = _ => {
@@ -312,11 +311,10 @@ const menus = {
             };
         };
     },
-
 };
 
 debug.initializate();
-debug.log("Build "+info.build+"v"+info.version, "#fff","#000");
+debug.log(`Build ${info.build}v${info.version}`, "#fff","#000");
 ready(_ => {
     list.initializate();
     theme.initializate();

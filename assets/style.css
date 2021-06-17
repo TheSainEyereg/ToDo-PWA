@@ -245,6 +245,7 @@ main ul {
     height: 100%;
 }
 main ul li {
+    display: flex;
     cursor: pointer;
     position: relative;
     margin: 5px 10px;
@@ -252,12 +253,12 @@ main ul li {
     font-size: 18px;
     border-top: 1px solid var(--second-color);
 }
-main ul li:active {box-shadow: none}
 main ul li.complete {
     color: var(--second-color);
     text-decoration: line-through;
 }
-main ul li span {
+main ul li span:first-child{width: 100%;}
+main ul li span:last-child{
     float: right;
     text-align: center;
     width: 22px;
@@ -265,7 +266,7 @@ main ul li span {
     border-radius: 50%; 
     color: var(--delete-color);
 }
-main ul li.complete span{
+main ul li.complete span:last-child{
     color:#f00;
     opacity: 0.5;
 }
