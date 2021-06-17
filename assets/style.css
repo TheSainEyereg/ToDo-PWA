@@ -297,7 +297,7 @@ footer a.add{
     border-radius: 50%;
 }
 .light footer a.add {
-    box-shadow: 0 0 50px -15px #000;
+    box-shadow: 0 0 35px -15px #000;
 }
 .dark footer a.add {
     box-shadow: none;
