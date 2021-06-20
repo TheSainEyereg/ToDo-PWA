@@ -127,9 +127,11 @@ h1, h2, h3 {margin: 5px;}
     text-overflow: ellipsis;
 }
 #manage_dial .box h3:focus {
-    outline: var(--alt-color);
+    border: var(--alt-color) solid 1px; 
+    outline: none;
     overflow: auto;
     text-overflow: unset;
+    border-radius: 2.5px;
 }
 #manage_dial .box .name a {
     width: 25px; height: 25px;
@@ -316,9 +318,10 @@ main, ul {
     position: relative;
     margin: 0;
     padding: 0;
-    height: calc(100% - 10px * 4) /* <--------- FREAKING HERE */
 }
+main {height: calc(100% - 10px * 4)}
 main ul {
+    height: 100%;
     list-style-type: none;
     overflow-y: scroll;
 }

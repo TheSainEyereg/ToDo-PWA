@@ -361,10 +361,10 @@ const menus = {
         };
         render();
         
-        const old = edit.innerText;
+        let old = data.task;
         edit.onfocus = _ => {edit.innerText = data.task;};
         edit.oninput = _ => {if (edit.innerText != "") data.task = edit.innerText; else data.task = old;};
-        edit.onblur = _ => {edit.scrollLeft = 0; task.update()};
+        edit.onblur = _ => {old = data.task; edit.innerText = data.task; edit.scrollLeft = 0; task.update()};
 
         important.onclick = _ => {task.important(tid);render()};
         complete.onclick = _ => {task.complete(tid);render()};
