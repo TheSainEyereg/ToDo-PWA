@@ -31,10 +31,9 @@ html, body{
 	scroll-behavior: smooth;
     font-family: 'VK Sans Display';
     user-select: none;
-}
-body{
     transition: .3s;
 }
+
 body.light {
     --first-color:var(--light-first);
     --second-color:var(--light-second);
@@ -54,20 +53,21 @@ body.dark {
 
 h1, h2, h3 {margin: 5px;}
 
-@keyframes popup {
+
+@keyframes modal {
     0% {opacity: 0;}
     100% {opacity: 1;}
 }
-.popup {
+.modal {
     position: absolute;
     top: 0;
     width: 100%;
     height: 100%;
     background-color: var(--overlay-color);
     z-index: 1000;
-    animation: popup .15s linear forwards;
+    animation: modal .15s linear forwards;
 }
-@keyframes popupbox {
+@keyframes box {
     0%{
         top: calc(50% + 10px);
     }
@@ -75,19 +75,23 @@ h1, h2, h3 {margin: 5px;}
         top: 50%
     }
 }
-.popup .box {
+.modal .box {
     background-color: var(--first-color);
     border-radius: 10px;
     z-index: 1001;
     position: absolute;
     font-size: 18px;
     padding: 5px;
+    max-width: 80%;
+
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
-    animation: popupbox .15s ease-in-out forwards;
+    animation: box .15s ease-in-out forwards;
 }
-.popup .box h1, .popup .box h2, .popup .box h3 {text-align: center; font-size: x-large;}
-
+.modal .box h1, .modal .box h2, .modal .box h3 {
+    text-align: center; 
+    font-size: x-large;
+}
 
 /* Popups */
 /* ~~~Add dialog~~~ */
@@ -108,8 +112,85 @@ h1, h2, h3 {margin: 5px;}
     color: var(--first-text-color);
 }
 #add_dial .box .wrapper input:focus {outline: none;}
-#add_dial .box .wrapper a {background-color: var(--alt-color); color: var(--first-color); width: 25px;}
+#add_dial .box .wrapper a {
+    background-color: var(--alt-color); 
+    color: var(--first-color); 
+    width: 25px;
+}
 #add_dial .box .wrapper a:hover {opacity: 0.5;}
+
+/* ~~~Manage dialog~~~ */
+#manage_dial .box h3 {
+    font-size: inherit;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+#manage_dial .box h3:focus {
+    outline: var(--alt-color);
+    overflow: auto;
+    text-overflow: unset;
+}
+#manage_dial .box .name a {
+    width: 25px; height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#manage_dial .box .name a svg {
+    fill: var(--second-text-color);
+    transform: rotate(45deg);
+}
+#manage_dial .box .wrapper {
+    text-align: center;
+}
+#manage_dial .box .wrapper * {
+    margin: 3px;
+    height: auto;
+    border: none;
+    border-radius: 5px;
+    padding: 2px 3px;
+}
+#manage_dial .box .wrapper .info {
+    font-size: initial;
+    color: var(--second-text-color);
+    font-family: sans-serif;
+    text-align: center;
+}
+#manage_dial .box .flexbox {display: flex;}
+#manage_dial .box .wrapper .flexbox a{
+    width: 30px;
+    height: 25px;
+    margin-right: 5px;
+    background: var(--second-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#manage_dial .box .wrapper .flexbox a.checked {
+    background: var(--alt-color);
+}
+#manage_dial .box .wrapper .flexbox a.star svg .im0{fill: var(--second-color);}
+#manage_dial .box .wrapper .flexbox a.star svg .im1{stroke: var(--alt-color);}
+#manage_dial .box .wrapper .flexbox a.checked.star svg .im0{fill: var(--alt-color);}
+#manage_dial .box .wrapper .flexbox a.checked.star svg .im1{stroke: var(--first-color);}
+#manage_dial .box .wrapper .flexbox a.complete svg {
+    stroke: var(--alt-color);
+    fill: var(--alt-color);
+}
+#manage_dial .box .wrapper .flexbox a.checked.complete svg {
+    stroke: var(--first-color);
+    fill: var(--first-color);
+}
+#manage_dial .box .wrapper .flexbox a.delete {
+    background-color: #f00; 
+    color: var(--first-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - (30px+5px)*2);
+    margin-right: 0;
+}
 
 /* ~~~Settings Dialog~~~ */
 #settings_dial .box {width: 60%;}
@@ -117,7 +198,7 @@ h1, h2, h3 {margin: 5px;}
 #settings_dial .box .wrapper table {width: 100%;}
 #settings_dial td {padding: 5px;}
 #settings_dial td:first-child{vertical-align: top;}
-#settings_dial td:last-child{max-width: 75px;}
+#settings_dial td:last-child{width: 100px;}
 #settings_dial td:nth-child(2) *{float: right;}
 #settings_dial #s_theme td a:last-child{display: flex;}
 #settings_dial #s_theme td a:last-child div:nth-child(1){color: var(--second-color);}
@@ -132,7 +213,6 @@ h1, h2, h3 {margin: 5px;}
     padding: 5px 10px;
     border: solid red 2px;
     border-radius: 5px;
-    transition: .3s;
 }
 #settings_dial #s_clearall a.crit {
     color: var(--first-color);
@@ -143,10 +223,9 @@ h1, h2, h3 {margin: 5px;}
     padding: 3px 6px;
     background-color: var(--second-color);
     border-radius: 5px;
-    transition: .3s;
 }
 #settings_dial #s_data td a:last-child{margin-top: 3px;}
-#settings_dial #s_data td a.complete{
+#settings_dial #s_data td a.completed{
     color: var(--first-color);
     background-color: var(--alt-color);
 }
@@ -242,7 +321,6 @@ main, ul {
 main ul {
     list-style-type: none;
     overflow-y: scroll;
-    height: 100%;
 }
 main ul li {
     display: flex;
@@ -253,24 +331,78 @@ main ul li {
     font-size: 18px;
     border-top: 1px solid var(--second-color);
 }
-main ul li.complete {
+main ul li.completed {
     color: var(--second-color);
     text-decoration: line-through;
 }
-main ul li span:first-child{width: 100%;}
-main ul li span:last-child{
+main ul li span.complete{
     float: right;
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+    border-radius: 50%;
+    background: var(--first-color);
+    border: solid 1px var(--second-text-color);
     text-align: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%; 
-    color: var(--delete-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .3s;
 }
-main ul li.complete span:last-child{
-    color:#f00;
-    opacity: 0.5;
+main ul li span.complete svg {
+    height: 15px;
+    stroke:none; 
+    fill: none;
 }
-main ul li span:active {background-color: var(--second-color);}
+main ul li.completed span.complete{
+    border-color: var(--alt-color);
+    background: var(--alt-color);
+}
+main ul li.completed span.complete svg {
+    stroke: var(--first-color);
+    fill: var(--first-color);
+}
+main ul li span.star{
+    width: 20px;
+    height: 20px;
+    margin-left: 15px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .3s;
+}
+main ul li.completed span.star {opacity: 0.5;}
+main ul li span.star svg .im0{fill: var(--first-color);} 
+main ul li span.star svg .im1{
+    stroke: var(--second-text-color);
+} 
+main ul li.important span.star svg .im0{
+    fill: var(--alt-color);
+} 
+main ul li.important span.star svg .im1{
+    stroke: var(--alt-color);
+}
+main ul li span.task {width: calc(100% - 15px*2 - 22px - 20px);}
+
+/* ~~~Old style~~~*/
+main ul.oldstyle li span.task {width: calc(100% - 15px - 20px);} 
+main ul.oldstyle li span.manage {
+    width: 20px;
+    height: 20px;
+    margin-left: 15px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .3s;
+}
+main ul.oldstyle li span.manage svg {
+    transform: rotate(90deg);
+    fill: var(--first-text-color);
+}
+main ul.oldstyle li.important span.manage svg {fill: var(--alt-color);}
+/*----------------*/
 
 footer{ 
     position: absolute;

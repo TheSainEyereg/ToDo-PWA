@@ -97,94 +97,197 @@ const theme = {
     }
 };
 
-const list = {
-    data: [],
+const task = {
+    data: {
+        version: 2,
+        oldstyle: false,
+        list: []
+    },
+    migrate: {
+        check() {
+            debug.log("Checking for data migrate...")
+            let old;
+            if (!!localStorage.getItem("list")) {
+                old = JSON.parse(localStorage.getItem("list"));
+                this.V1toV2(old);
+                localStorage.removeItem("list");
+            } else if (typeof task.data.version === "undefined"){
+                old = task.data;
+                this.V1toV2(old);
+            } else if (task.data.version == 2) {
+
+            } else {
+                debug.log("Data format is up to date!");
+            }
+
+        },
+        V1toV2(old) {
+            debug.log("Started data migration from V1 to V2...");
+            localStorage.removeItem("list");
+            task.data = {version: 2, list: []};
+            for (let i in old) {
+                const push = {};
+                push.task = old[i].task;
+                push.date = new Date();
+                push.completed = old[i].complete;
+                push.important = false;
+                push.repeat = false;
+                task.data.list.push(push);
+            }
+            task.data.oldstyle = true; 
+            debug.log("Migration completed!", "green");
+        },
+        V2toV3() {}
+    },
     initializate() {
-        if (!localStorage.getItem("list")) return localStorage.setItem("list", JSON.stringify(this.data));
-        this.data = JSON.parse(localStorage.getItem("list"));
-        debug.log(`Task initialization`);
+        if (!localStorage.getItem("todo-data")) localStorage.setItem("todo-data", JSON.stringify(this.data));
+        this.data = JSON.parse(localStorage.getItem("todo-data"));
+        debug.log("Task initialization");
         this.update();
     },
     update() {
-        localStorage.setItem("list", JSON.stringify(this.data));
+        this.migrate.check();
+        localStorage.setItem("todo-data", JSON.stringify(this.data));
         el("#todoList").innerHTML = "";
-        debug.log(`Started updating for ${this.data.length} tasks`);
-        debug.log(`-----------------------`);
-        for (let i in this.data) {
+        debug.log(`Started updating for ${this.data.list.length} tasks`);
+        debug.log("-----------------------");
+        for (let i = this.data.list.length-1; i >= 0; i--) {
             const task = document.createElement("li");
             task.dataset.tid = i;
-            task.innerHTML = `<span>${this.data[i].task}</span> <span class="delete">×</span>`;
-            if (this.data[i].complete == true) task.classList.add("complete");
-            debug.log(`Added "${this.data[i].task}" task, complete: ${this.data[i].complete}, tid: ${i}`);
-            el("#todoList").prepend(task);
-            task.children[0].onclick = e => {this.complete(e.target.parentElement)};
-            task.children[1].onclick = e => {this.delete(e.target.parentElement)};
+            if (!this.data.oldstyle) {
+                el("#todoList").classList.remove("oldstyle")
+                task.innerHTML = `
+                <span class="complete">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    viewBox="0 0 1080 1080" "xml:space="preserve">
+                        <style type="text/css">
+                        .ch0{stroke-width:50;stroke-linejoin:round;stroke-miterlimit:10;}
+                        </style>
+                        <polygon class="ch0" points="420.2,850.01 375.73,807.9 375.13,807.29 106.93,539.1 195.82,450.22 420.87,675.27 886.56,229 
+                        973.53,319.76 "/>
+                    </svg>
+                </span>
+                <span class="task">${this.data.list[i].task}</span>
+                <span class="star">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                        viewBox="0 0 1080 1080" xml:space="preserve">
+                        <style type="text/css">
+                            .im0{stroke-width:40;stroke-linejoin:round;stroke-miterlimit:10;}
+                            .im1{stroke:#000000;stroke-width:40;stroke-linejoin:round;stroke-miterlimit:10;}
+                        </style>
+                        <g>
+                            <polygon class="im0" points="540.1,92 685.7,387 1011.2,434.3 775.6,663.9 831.2,988.1 540.1,835 248.9,988.1 304.5,663.9 
+                                69,434.3 394.5,387 	"/>
+                            <path class="im1" d="M540.1,94.5l144.6,293l0.3,0.5l0.6,0.1l323.3,47l-234,228l-0.4,0.4l0.1,0.6l55.2,322L540.6,834l-0.5-0.3
+                                l-0.5,0.3l-289.2,152l55.2-322l0.1-0.6l-0.4-0.4l-234-228l323.3-47l0.6-0.1l0.3-0.5L540.1,94.5 M540.1,92L394.5,387L69,434.3
+                                l235.5,229.6l-55.6,324.2L540.1,835l291.1,153.1l-55.6-324.2l235.5-229.6L685.7,387L540.1,92L540.1,92z"/>
+                        </g>
+                    </svg>
+                <span>
+                `;
+                task.children[0].onclick = _ => {this.complete(task.dataset.tid)};
+                task.children[1].onclick = _ => {menus.manage(task.dataset.tid)};
+                task.children[2].onclick = _ => {this.important(task.dataset.tid)};
+            } else {
+                el("#todoList").classList.add("oldstyle")
+                task.innerHTML = `
+                <span class="task">${this.data.list[i].task}</span>
+                <span class="manage">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <g>
+                            <circle cx="254.69" cy="255.51" r="39.75"/>
+                            <circle cx="255.69" cy="139.51" r="39.75"/>
+                            <circle cx="255.69" cy="371.51" r="39.75"/>
+                        </g>
+                    </svg>
+                <span>
+                `;
+                task.children[0].onclick = _ => {this.complete(task.dataset.tid)};
+                task.children[1].onclick = _ => {menus.manage(task.dataset.tid)};
+                //task.children[2].onclick = _ => {this.important(task.dataset.tid)};
+            };
+
+            if (this.data.list[i].completed == true) task.classList.add("completed");
+            if (this.data.list[i].important) {
+                task.classList.add("important")
+                el("#todoList").prepend(task);
+            } else {
+                el("#todoList").append(task);
+            }
+            debug.log(`Added "${this.data.list[i].task}" task, complete: ${this.data.list[i].completed}, important: ${this.data.list[i].important}, tid: ${i}`);
         };
-        debug.log(`-----------------------`);
+        debug.log("-----------------------");
     },
     add() {
-        if (!el("#add_dial #textField")) return debug.log("No add dialog!", "red");
-        const task = el("#add_dial #textField").value;
-        el("#add_dial #textField").value = "";
-        popup.close("add");
+        const task = el("#add_dial input").value;
+        el("#add_dial input").value = "";
+        gui.modal.close("add");
         if (!task) return //alert("Введите имя задачи.");
-        this.data.push({"task": task, "complete": false});
+        this.data.list.push({"task": task, "date": new Date(),"complete": false, "important": false, "repeat": false});
         debug.log(`Added "${task}" task`);
         this.update();
     },
-    delete(el) {
-        const tid = el.dataset.tid;
-        this.data.splice(tid,1);
+    delete(tid) {
+        this.data.list.splice(tid,1);
         debug.log(`Deleted id${tid} task`);
         this.update();
     },
-    complete(el) {
-        const tid = el.dataset.tid;
-        if (!el.classList.contains("complete")) {
-            el.classList.add("complete");
-            this.data[tid].complete = true;
+    complete(tid) {
+        if (!this.data.list[tid].completed) {
+            this.data.list[tid].completed = true;
             debug.log(`Complete id${tid} task`);
         } else {
-            el.classList.remove("complete");
-            this.data[tid].complete = false;
+            this.data.list[tid].completed = false;
             debug.log(`Uncomplete id${tid} task`);
+        };
+        this.update();
+    },
+    important(tid) {
+        if (!this.data.list[tid].important) {
+            this.data.list[tid].important = true;
+            debug.log(`Set important id${tid} task`);
+        } else {
+            this.data.list[tid].important = false;
+            debug.log(`Unset important id${tid} task`);
         };
         this.update();
     }
 };
 
-const popup = {
-    show(id, content)  {
-        const divId = `${id}_dial`;
-        if (content) {
-            if (el(`#${divId}`)) return debug.log(`Popup with id="${id}" already exists!`, "red");
-            const popup = document.createElement("div");
-            popup.classList.add("popup");
-            popup.id = divId;
-            const box = document.createElement("div");
-            box.classList.add("box")
-            box.innerHTML = content;
+const gui = {
+    modal: {
+        show(id, html)  {
+            const divId = `${id}_dial`;
+            if (html) {
+                if (el(`#${divId}`)) return debug.log(`Popup with id="${id}" already exists!`, "red");
+                const modal = document.createElement("div");
+                modal.classList.add("modal");
+                modal.id = divId;
+                const box = document.createElement("div");
+                box.classList.add("box")
+                box.innerHTML = html;
+        
+                modal.append(box);
+                document.body.append(modal);
+        
+                //click outside detection
+                box.onclick = _ => {
+                    box.dataset.clicked = 1;
+                };
+                modal.onclick = e => {
+                    const clicked = (box.dataset.clicked == 1);
+                    debug.log(clicked);
+                    box.dataset.clicked = 0;
+                    if (!clicked) this.close(id);
+                };
+            } else return debug.log(`No HTML content given`, "red");
+        },
+        close(id) {
+            const divId = `${id}_dial`;
+            if(el(`#${divId}`)) el(`#${divId}`).remove();
+            else return debug.log(`No modal window with id="${id}"`, "red");
     
-            popup.append(box);
-            document.body.append(popup);
-    
-            //click outside detection
-            box.onclick = _ => {
-                box.dataset.clicked = 1;
-            };
-            popup.onclick = e => {
-                const clicked = (box.dataset.clicked == 1);
-                debug.log(clicked);
-                box.dataset.clicked = 0;
-                if (!clicked) this.close(id);
-            };
-        } else return debug.log(`No content given`, "red");
-    },
-    close(id) {
-        const divId = `${id}_dial`;
-        if(el(`#${divId}`)) el(`#${divId}`).remove();
-        else return debug.log(`No popup window with id="${id}"`, "red");
-
+        }
     }
 };
 
@@ -193,18 +296,97 @@ const menus = {
         const html = `
         <h3>Add task</h3>
         <div class="wrapper">
-            <input type="text" id="textField" placeholder="Task name" autofocus>
-            <a onclick="list.add()">✔</a>
+            <input type="text" id="textField" placeholder="Task name">
+            <a>✔</a>
         </div>
         `;
-        popup.show("add", html);
-        el("#add_dial #textField").focus();
+        gui.modal.show("add", html);
+        el("#add_dial input").focus();
+        el("#add_dial a").onclick = _=>{task.add()};
+    },
+    manage(tid) {
+        html = `
+        <h3 contenteditable="true">Manage task</h3>
+        <div class="wrapper">
+            <div class="info">
+                <span id="time"></span>
+            </div>
+            <div class="flexbox">
+                <a class="star">   
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                        viewBox="0 0 1080 1080" xml:space="preserve">
+                        <style type="text/css">
+                            .im0{stroke-width:40;stroke-linejoin:round;stroke-miterlimit:10;}
+                            .im1{stroke:#000000;stroke-width:40;stroke-linejoin:round;stroke-miterlimit:10;}
+                        </style>
+                        <g>
+                            <polygon class="im0" points="540.1,92 685.7,387 1011.2,434.3 775.6,663.9 831.2,988.1 540.1,835 248.9,988.1 304.5,663.9 
+                                69,434.3 394.5,387 	"/>
+                            <path class="im1" d="M540.1,94.5l144.6,293l0.3,0.5l0.6,0.1l323.3,47l-234,228l-0.4,0.4l0.1,0.6l55.2,322L540.6,834l-0.5-0.3
+                                l-0.5,0.3l-289.2,152l55.2-322l0.1-0.6l-0.4-0.4l-234-228l323.3-47l0.6-0.1l0.3-0.5L540.1,94.5 M540.1,92L394.5,387L69,434.3
+                                l235.5,229.6l-55.6,324.2L540.1,835l291.1,153.1l-55.6-324.2l235.5-229.6L685.7,387L540.1,92L540.1,92z"/>
+                        </g>
+                    </svg>
+                </a>
+                <a class="complete">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    viewBox="0 0 1080 1080" "xml:space="preserve">
+                        <style type="text/css">
+                        .ch0{stroke-width:50;stroke-linejoin:round;stroke-miterlimit:10;}
+                        </style>
+                        <polygon class="ch0" points="420.2,850.01 375.73,807.9 375.13,807.29 106.93,539.1 195.82,450.22 420.87,675.27 886.56,229 
+                        973.53,319.76 "/>
+                    </svg>
+                </a>
+                <a class="delete">Delete</a>
+            </div>
+        </div>
+        `
+        gui.modal.show("manage", html);
+
+        const data = task.data.list[tid];
+        el("#manage_dial h3").innerText = data.task;
+        const date = new Date(data.date);
+        el("#manage_dial #time").innerText = `Created at: \n${date.toString().split(" GMT")[0]}`;
+        
+        const edit = el("#manage_dial h3");
+        const important = el("#manage_dial .star");
+        const complete = el("#manage_dial .complete");
+        const remove = el("#manage_dial .delete");
+        function render() {
+            if (data.important) {important.classList.add("checked")}
+            else {important.classList.remove("checked")};
+            if (data.completed) {complete.classList.add("checked")}
+            else {complete.classList.remove("checked")};
+        };
+        render();
+        
+        const old = edit.innerText;
+        edit.onfocus = _ => {edit.innerText = data.task;};
+        edit.oninput = _ => {if (edit.innerText != "") data.task = edit.innerText; else data.task = old;};
+        edit.onblur = _ => {edit.scrollLeft = 0; task.update()};
+
+        important.onclick = _ => {task.important(tid);render()};
+        complete.onclick = _ => {task.complete(tid);render()};
+        remove.onclick = _ => {task.delete(tid); gui.modal.close("manage")};
+
     },
     settings() {
         const html = `
         <h3>Settings</h3>
         <div class="wrapper">
             <table>
+                <tr id="s_style">
+                    <td>
+                        Old style
+                    </td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                </tr>
                 <tr id="s_autotheme">
                     <td>Auto theme</td>
                     <td>
@@ -242,12 +424,19 @@ const menus = {
             </table>
         </div>
         `;
-        popup.show("settings", html);
+        gui.modal.show("settings", html);
 
-        const sw = el("#s_autotheme input");
-        sw.checked = theme.auto;
-        sw.onclick =_ => {
-            theme.autoset(sw.checked);
+        const ssw = el("#s_style input");
+        ssw.checked = task.data.oldstyle;
+        ssw.onclick = _ => {
+            task.data.oldstyle = ssw.checked;
+            task.update();
+        };
+
+        const asw = el("#s_autotheme input");
+        asw.checked = theme.auto;
+        asw.onclick = _ => {
+            theme.autoset(asw.checked);
         };
 
         const exb = el("#settings_dial #s_data a#export");
@@ -256,7 +445,7 @@ const menus = {
             form.setAttribute("type", "text");
             form.id = "copyPlace";
             document.body.append(form);
-            form.value = JSON.stringify(list.data);
+            form.value = JSON.stringify(task.data);
             form.select();
             document.execCommand("copy");
             form.remove();
@@ -269,14 +458,14 @@ const menus = {
                 exb.innerText = "Export";
             }, 1500)
         };
-        let inb = el("#settings_dial #s_data a#import");
+        const inb = el("#settings_dial #s_data a#import");
         inb.onclick = _ => {
             const input = prompt("Enter exported value");
             if (input == null || input.length == 0) return debug.log("Nothing was entered", "red")
             try {
                 let data = JSON.parse(input);
-                list.data = data;
-                list.update();
+                task.data = data;
+                task.update();
                 inb.classList.add("complete");
                 inb.innerText = "Restored!";
                 debug.log("Imported data successfully!", "#00c800");
@@ -301,8 +490,8 @@ const menus = {
                 rall.classList.add("crit");
                 rall.innerText = "Are you sure?";
             } else {
-                list.data = [];
-                list.update();
+                task.data = [];
+                task.update();
                 rall.innerText = "Cleared!";
                 setTimeout(_ => {
                     rall.classList.remove("crit");
@@ -310,19 +499,20 @@ const menus = {
                 }, 1500);
             };
         };
-    },
+    }
 };
 
 debug.initializate();
 debug.log(`Build ${info.build}v${info.version}`, "#fff","#000");
 ready(_ => {
-    list.initializate();
+    task.initializate();
     theme.initializate();
 
     document.onkeypress = e => {
         if(e.key == "Enter") {
             debug.log("Pressed enter");
-            list.add();
+            if (el("#add_dial")) task.add();
+            if (el("#manage_dial")) el("#manage_dial h3").blur();
         };
     };
 
