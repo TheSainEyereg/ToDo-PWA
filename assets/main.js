@@ -449,12 +449,12 @@ const menus = {
             form.select();
             document.execCommand("copy");
             form.remove();
-            exb.classList.add("complete");
+            exb.classList.add("completed");
             exb.innerText = "Copied!";
             debug.log("Exported data to clipboard!", "#00c800")
             alert("Copied data to clipbord!\nMake sure you saved it to safe place!")
             setTimeout(_ => {
-                exb.classList.remove("complete");
+                exb.classList.remove("completed");
                 exb.innerText = "Export";
             }, 1500)
         };
@@ -466,7 +466,7 @@ const menus = {
                 let data = JSON.parse(input);
                 task.data = data;
                 task.update();
-                inb.classList.add("complete");
+                inb.classList.add("completed");
                 inb.innerText = "Restored!";
                 debug.log("Imported data successfully!", "#00c800");
                 console.log(data);
@@ -479,7 +479,7 @@ const menus = {
             }
             setTimeout(_ => {
                 inb.classList.remove("failed");
-                inb.classList.remove("complete");
+                inb.classList.remove("completed");
                 inb.innerText = "Import";
             }, 1500);
         };
