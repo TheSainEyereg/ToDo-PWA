@@ -174,7 +174,7 @@ h1, h2, h3 {margin: 5px;}
 }
 #manage_dial .box .wrapper .flexbox a.star svg .im0{fill: var(--second-color);}
 #manage_dial .box .wrapper .flexbox a.star svg .im1{stroke: var(--alt-color);}
-#manage_dial .box .wrapper .flexbox a.checked.star svg .im0{fill: var(--alt-color);}
+#manage_dial .box .wrapper .flexbox a.checked.star svg .im0{fill: var(--first-color);}
 #manage_dial .box .wrapper .flexbox a.checked.star svg .im1{stroke: var(--first-color);}
 #manage_dial .box .wrapper .flexbox a.complete svg {
     stroke: var(--alt-color);
