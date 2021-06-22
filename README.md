@@ -1,2 +1,2 @@
-# ToDo PWA App
- My ToDo PWA App for school project
+# ToDo PWA
+ My ToDo PWA for school project
