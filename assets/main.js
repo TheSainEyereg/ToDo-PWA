@@ -218,11 +218,8 @@ const task = {
         };
         debug.log("-----------------------");
     },
-    add() {
-        const task = el("#add_dial input").value;
-        el("#add_dial input").value = "";
-        gui.modal.close("add");
-        if (!task) return //alert("Введите имя задачи.");
+    add(task) {
+        if (!task) return;
         this.data.list.push({"task": task, "date": new Date(),"complete": false, "important": false, "repeat": false});
         debug.log(`Added "${task}" task`);
         this.update();
@@ -302,7 +299,13 @@ const menus = {
         `;
         gui.modal.show("add", html);
         el("#add_dial input").focus();
-        el("#add_dial a").onclick = _=>{task.add()};
+
+        el("#add_dial a").onclick = _=>{
+            const value = el("#add_dial input").value;
+            el("#add_dial input").value = "";
+            task.add(value)
+            gui.modal.close("add");
+        };
     },
     manage(tid) {
         html = `
@@ -511,7 +514,7 @@ ready(_ => {
     document.onkeypress = e => {
         if(e.key == "Enter") {
             debug.log("Pressed enter");
-            if (el("#add_dial")) task.add();
+            if (el("#add_dial")) el("#add_dial a").click();
             if (el("#manage_dial")) el("#manage_dial h3").blur();
         };
     };

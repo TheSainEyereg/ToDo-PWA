@@ -42,17 +42,17 @@ const cache = {
     },
 };
 
-// событие install
+//Install event
 self.addEventListener("install", (e) => {
     console.log("Caching shell assets");
     cache.cache(e);
 });
-// событие activate
+//Activate event
 self.addEventListener("activate", (e) => {
     console.log("Checking shell assets");
     cache.check(e);
 });
-// событие fetch
+//Fetch event
 self.addEventListener("fetch", (e) => {
     if (!navigator.onLine) {
         console.log("Loading shell assets");
