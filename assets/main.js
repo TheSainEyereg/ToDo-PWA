@@ -1,6 +1,6 @@
 const info = {
-    build: "160621",
-    version: 1
+    build: "130721",
+    version: 2
 };
 if (window.location.host.includes("localhost")) document.title = "ToDo PWA Dev";
 
