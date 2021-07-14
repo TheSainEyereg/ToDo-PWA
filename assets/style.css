@@ -30,6 +30,7 @@ html, body{
 	box-sizing: border-box;
 	scroll-behavior: smooth;
     font-family: 'VK Sans Display';
+    font-synthesis: style;
     user-select: none;
     transition: .3s;
 }
