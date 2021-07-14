@@ -190,7 +190,7 @@ h1, h2, h3 {margin: 5px;}
     display: flex;
     align-items: center;
     justify-content: center;
-    width: calc(100% - (30px+5px)*2);
+    width: calc(100% - (30px + 5px) *2);
     margin-right: 0;
 }
 
