@@ -493,7 +493,7 @@ const menus = {
                 rall.classList.add("crit");
                 rall.innerText = "Are you sure?";
             } else {
-                task.data = [];
+                task.data.list = [];
                 task.update();
                 rall.innerText = "Cleared!";
                 setTimeout(_ => {
