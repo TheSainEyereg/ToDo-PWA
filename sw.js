@@ -54,11 +54,17 @@ self.addEventListener("activate", (e) => {
 });
 //Fetch event
 self.addEventListener("fetch", (e) => {
-    if (!navigator.onLine) {
-        console.log("Loading shell assets");
-        cache.load(e);
-    } else {
-        console.log("You are online.");
-        cache.cache(e);
-    }
+	let loaded = false;
+	fetch("https://api.olejka.ru/v2").then(() => {
+		if (loaded) return;
+		cache.cache(e);
+		loaded = true;
+	}).catch(e => {
+		if (loaded) return;
+		cache.load(e);
+		loaded = true;
+	})
+	setTimeout(()=>{
+		if (!loaded) cache.load(e);
+	}, 3000)
 });
