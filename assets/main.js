@@ -467,7 +467,7 @@ const menus = {
                 </tr>
                 <tr id="s_about">
                     <td style="text-align:center;" colspan="2">
-						<a href="https://github.com/TheSainEyereg/ToDo-PWA">Project GitHub</a><br>
+						<a href="https://github.com/TheSainEyereg/ToDo-PWA">GitHub repo</a><br>
 						&copy;${new Date().getFullYear()} <a href="https://olejka.ru/">Oleg Logvinov</a>
                     </td>
                 </tr>
