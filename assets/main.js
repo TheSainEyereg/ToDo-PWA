@@ -182,7 +182,7 @@ const task = {
                         973.53,319.76 "/>
                     </svg>
                 </span>
-                <span class="task">${this.data.list[i].task}</span>
+                <span class="task"></span>
                 <span class="star">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                         viewBox="0 0 1080 1080" xml:space="preserve">
@@ -200,13 +200,15 @@ const task = {
                     </svg>
                 <span>
                 `;
+				task.children[1].innerText = this.data.list[i].task;
+
                 task.children[0].onclick = _ => {this.complete(task.dataset.tid)};
                 task.children[1].onclick = _ => {menus.manage(task.dataset.tid)};
                 task.children[2].onclick = _ => {this.important(task.dataset.tid)};
             } else {
                 el("#todoList").classList.add("oldstyle")
                 task.innerHTML = `
-                <span class="task">${this.data.list[i].task}</span>
+                <span class="task"></span>
                 <span class="manage">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                         <g>
@@ -217,6 +219,8 @@ const task = {
                     </svg>
                 <span>
                 `;
+				task.children[0].innerText = this.data.list[i].task;
+
                 task.children[0].onclick = _ => {this.complete(task.dataset.tid)};
                 task.children[1].onclick = _ => {menus.manage(task.dataset.tid)};
                 //task.children[2].onclick = _ => {this.important(task.dataset.tid)};
@@ -427,7 +431,7 @@ const menus = {
 					</td>
 				</tr>
                 <tr id="s_autotheme">
-                    <td>Auto theme</td>
+                    <td>Auto detect</td>
                     <td>
                         <label class="switch">
                             <input type="checkbox">
@@ -463,7 +467,8 @@ const menus = {
                 </tr>
                 <tr id="s_about">
                     <td style="text-align:center;" colspan="2">
-						&copy; ${new Date().getFullYear()} <a href="https://olejka.ru/">Oleg Logvinov</a>
+						<a href="https://github.com/TheSainEyereg/ToDo-PWA">Project GitHub</a><br>
+						&copy;${new Date().getFullYear()} <a href="https://olejka.ru/">Oleg Logvinov</a>
                     </td>
                 </tr>
             </table>
@@ -540,7 +545,7 @@ const menus = {
 				task.data.list = [];
 				task.update();
 				del.classList.add("failed");
-				del.innerText = "Cleared!";
+				del.innerText = "Deleted!";
 				debug.log("Data cleared!", "#00c800");
 			}
 			setTimeout(_ => {
