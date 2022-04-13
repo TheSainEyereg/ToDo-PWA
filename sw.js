@@ -16,15 +16,19 @@ const assets = [
 
 const cache = {
     cache(e) {
+		//console.log(1);
         e.waitUntil(
             caches.open(staticCacheName).then((cache) => {
+				//console.log(1.1)
                 cache.addAll(assets);
             })
         );
     },
     check(e) {
+		//console.log(2);
         e.waitUntil(
             caches.keys().then((keys) => {
+				//console.log(2.1);
                 return Promise.all(
                     keys
                         .filter((key) => key !== staticCacheName)
@@ -34,37 +38,61 @@ const cache = {
         );
     },
     load(e) {
+		//console.log(3);
         e.respondWith(
             caches.match(e.request).then((cacheRes) => {
-                return cacheRes || fetch(e.request);
+				//console.log(3.1);
+                return cacheRes || fetch(e.request).catch(/*() => console.log("Failed to fetch")*/);
             })
         );
     },
 };
 
-//Install event
-self.addEventListener("install", (e) => {
-    console.log("Caching shell assets");
-    cache.cache(e);
-});
-//Activate event
-self.addEventListener("activate", (e) => {
-    console.log("Checking shell assets");
-    cache.check(e);
-});
-//Fetch event
+self.addEventListener("install", (e) => cache.cache(e));
+self.addEventListener("activate", (e) => cache.check(e));
+
 self.addEventListener("fetch", (e) => {
-	let loaded = false;
-	fetch("https://api.olejka.ru/v2").then(() => {
-		if (loaded) return;
+
+	if (navigator.onLine) {	
+		//console.log("Connection is available!");
 		cache.cache(e);
-		loaded = true;
-	}).catch(e => {
-		if (loaded) return;
+	} else {
+		//console.log("No connection at all!");
 		cache.load(e);
-		loaded = true;
-	})
-	setTimeout(()=>{
-		if (!loaded) cache.load(e);
-	}, 3000)
+	}
+
+	// r/therewasanattempt
+
+	// let loaded = false;
+    // const controller = new AbortController();
+
+	// fetch("https://api.olejka.ru/v2", {
+	// 	method: "GET",
+	// 	mode: "no-cors",
+	// 	signal: controller.signal,
+	// }).then(() => {
+	// 	if (loaded) return;
+	// 	loaded = true;
+
+	// 	//console.log("Connection established, caching assets!");
+	// 	cache.cache(e);
+
+	// }).catch(err => {
+	// 	if (loaded) return;
+	// 	loaded = true;
+
+	// 	//console.log("Connection error, loading from cache!");
+	// 	//cache.load(e);
+
+	// })
+	// setTimeout(()=>{
+	// 	//console.log(loaded)
+	// 	if (loaded) return;
+	// 	loaded = true;
+
+	// 	//console.log("Timed out, aborting and loading from cache!");
+	// 	controller.abort();
+	// 	cache.load(e);
+
+	// }, 3000)
 });

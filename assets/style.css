@@ -54,7 +54,6 @@ body.dark {
 
 h1, h2, h3 {margin: 5px;}
 
-
 @keyframes modal {
     0% {opacity: 0;}
     100% {opacity: 1;}
@@ -208,26 +207,14 @@ h1, h2, h3 {margin: 5px;}
 #settings_dial #s_theme td a:last-child div:nth-child(2){color: var(--alt-color);}
 #settings_dial #s_theme td a:last-child div:nth-child(3){color: var(--first-text-color);}
 #settings_dial #s_theme td a:last-child div:nth-child(4){color: var(--second-text-color);}
-#settings_dial #s_clearall td {
-    vertical-align: middle;
-    height: 30px;
-}
-#settings_dial #s_clearall a {
-    padding: 5px 10px;
-    border: solid red 2px;
-    border-radius: 5px;
-}
-#settings_dial #s_clearall a.crit {
-    color: var(--first-color);
-    background-color: red;
-
-}
+#settings_dial #s_header td {padding-bottom: 0;}
 #settings_dial #s_data td a {
     padding: 3px 6px;
     background-color: var(--second-color);
     border-radius: 5px;
+	margin-bottom: 3px;
 }
-#settings_dial #s_data td a:last-child{margin-top: 3px;}
+#settings_dial #s_data td a:last-child{margin-bottom: 0}
 #settings_dial #s_data td a.completed{
     color: var(--first-color);
     background-color: var(--alt-color);
@@ -235,6 +222,10 @@ h1, h2, h3 {margin: 5px;}
 #settings_dial #s_data td a.failed{
     color: var(--first-color);
     background-color: red;
+}
+#settings_dial #s_about td {
+	font-size: 14px;
+	padding: 0;
 }
 /*-------------------------*/
 
@@ -285,13 +276,18 @@ h1, h2, h3 {margin: 5px;}
 
 header {
     display: flex;
-    padding: 5px;
+	align-items: center;
+	background-color: var(--first-color);
     color: var(--second-text-color);
+    padding: 5px;
+	width: calc(100% - 10px);
+	height: 40px;
     text-align: center;
     font-family: 'Comfortaa';
     font-size: 10px;
-    position: relative;
+	z-index: 100;
 }
+body.newScroll header {position: fixed}
 header svg {
     height: 30px;
     stroke: var(--second-text-color);
@@ -308,39 +304,40 @@ header nav a.active svg{
     fill: var(--alt-color);
     stroke: var(--alt-color);
 }*/
-header h1 {margin: 5px auto;}
+header h1 {margin: 0 auto;}
 header .settings {
     position: absolute;
     right: 5px;
 }
 header .settings svg {fill: var(--first-text-color) !important;}
 
-main, ul {
-    position: relative;
+main {
+    position: absolute;
     margin: 0;
     padding: 0;
+	width: 100%;
+	height: 100%;
+	overflow-y: scroll;
 }
-main {height: calc(100% - 10px * 4)}
-main ul {
-    height: 100%;
-    list-style-type: none;
-    overflow-y: scroll;
-}
-main ul li {
+main .item {
     display: flex;
+    align-items: center;
     cursor: pointer;
     position: relative;
+    min-height: 30px;
     margin: 5px 10px;
     padding: 10px 5px;
     font-size: 18px;
     border-top: 1px solid var(--second-color);
 }
-main ul li.completed {
+body.newScroll main .item:first-child {margin-top: 50px;}
+
+main .item.completed {
     color: var(--second-color);
     text-decoration: line-through;
 }
 
-main ul li span.complete{
+main .item span.complete{
     float: right;
     width: 20px;
     height: 20px;
@@ -354,21 +351,21 @@ main ul li span.complete{
     justify-content: center;
     transition: .3s;
 }
-main ul li span.complete svg {
+main .item span.complete svg {
     height: 15px;
     stroke:none; 
     fill: none;
 }
-main ul li.completed span.complete{
+main .item.completed span.complete{
     border-color: var(--alt-color);
     background: var(--alt-color);
 }
-main ul li.completed span.complete svg {
+main .item.completed span.complete svg {
     stroke: var(--first-color);
     fill: var(--first-color);
 }
-main ul li.completed span.task * {opacity:0.5}
-main ul li span.star{
+main .item.completed span.task * {opacity:0.5}
+main .item span.star{
     width: 20px;
     height: 20px;
     margin-left: 15px;
@@ -378,22 +375,22 @@ main ul li span.star{
     justify-content: center;
     transition: .3s;
 }
-main ul li.completed span.star {opacity: 0.5;}
-main ul li span.star svg .im0{fill: var(--first-color);} 
-main ul li span.star svg .im1{
+main .item.completed span.star {opacity: 0.5;}
+main .item span.star svg .im0{fill: var(--first-color);} 
+main .item span.star svg .im1{
     stroke: var(--second-text-color);
 } 
-main ul li.important span.star svg .im0{
+main .item.important span.star svg .im0{
     fill: var(--alt-color);
 } 
-main ul li.important span.star svg .im1{
+main .item.important span.star svg .im1{
     stroke: var(--alt-color);
 }
-main ul li span.task {width: calc(100% - 15px*2 - 22px - 20px);}
+main .item span.task {width: calc(100% - 15px*2 - 22px - 20px);}
 
 /* ~~~Old style~~~*/
-main ul.oldstyle li span.task {width: calc(100% - 15px - 20px);} 
-main ul.oldstyle li span.manage {
+main.oldstyle .item span.task {width: calc(100% - 15px - 20px);} 
+main.oldstyle .item span.manage {
     width: 20px;
     height: 20px;
     margin-left: 15px;
@@ -403,11 +400,11 @@ main ul.oldstyle li span.manage {
     justify-content: center;
     transition: .3s;
 }
-main ul.oldstyle li span.manage svg {
+main.oldstyle .item span.manage svg {
     transform: rotate(90deg);
     fill: var(--first-text-color);
 }
-main ul.oldstyle li.important span.manage svg {fill: var(--alt-color);}
+main.oldstyle .item.important span.manage svg {fill: var(--alt-color);}
 /*----------------*/
 
 footer{ 

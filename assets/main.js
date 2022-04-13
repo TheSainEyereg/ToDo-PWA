@@ -97,6 +97,20 @@ const theme = {
     }
 };
 
+const animationManager = {
+	newScroll: localStorage.getItem("newScroll") === "true",
+	newScrollSet(arg) {
+		this.newScroll = arg;
+		if (document.body.classList.contains("newScroll") && !this.newScroll) {
+			document.body.classList.remove("newScroll");
+		} else if (!document.body.classList.contains("newScroll") && this.newScroll) {
+			document.body.classList.add("newScroll");
+		}
+		localStorage.setItem("newScroll", this.newScroll);
+		debug.log("Set newScroll to " + this.newScroll, "#00c800");
+	}
+}
+
 const task = {
     data: {
         version: 2,
@@ -152,7 +166,8 @@ const task = {
         debug.log(`Started updating for ${this.data.list.length} tasks`);
         debug.log("-----------------------");
         for (let i = this.data.list.length-1; i >= 0; i--) {
-            const task = document.createElement("li");
+            const task = document.createElement("div");
+			task.classList.add("item");
             task.dataset.tid = i;
             if (!this.data.oldstyle) {
                 el("#todoList").classList.remove("oldstyle")
@@ -379,17 +394,38 @@ const menus = {
         <h3>Settings</h3>
         <div class="wrapper">
             <table>
-                <tr id="s_style">
-                    <td>
-                        Old style
-                    </td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </td>
-                </tr>
+				<tr id="s_header">
+					<td style="text-align:center;" colspan="2">
+						Style
+					</td>
+				</tr>
+				<tr id="s_style">
+					<td>
+						Old style
+					</td>
+					<td>
+						<label class="switch">
+							<input type="checkbox">
+							<span class="slider"></span>
+						</label>
+					</td>
+				</tr>
+				<tr id="s_scroll">
+					<td>
+						New scrolling
+					</td>
+					<td>
+						<label class="switch">
+							<input type="checkbox">
+							<span class="slider"></span>
+						</label>
+					</td>
+				</tr>
+				<tr id="s_header">
+					<td style="text-align:center;" colspan="2">
+						Theme
+					</td>
+				</tr>
                 <tr id="s_autotheme">
                     <td>Auto theme</td>
                     <td>
@@ -410,18 +446,24 @@ const menus = {
                         </a>
                     </td>
                 </tr>
+				<tr id="s_header">
+					<td style="text-align:center;" colspan="2">
+						Data management
+					</td>
+				</tr>
                 <tr id="s_data">
                     <td>
-                        Save data
+                        Local storage
                     </td>
                     <td>
                         <a id="export">Export</a>
                         <a id="import">Import</a>
+                        <a id="delete" class="crit">Delete</a>
                     </td>
                 </tr>
-                <tr id="s_clearall">
+                <tr id="s_about">
                     <td style="text-align:center;" colspan="2">
-                        <a>Clear all tasks</a>
+						&copy; ${new Date().getFullYear()} <a href="https://olejka.ru/">Oleg Logvinov</a>
                     </td>
                 </tr>
             </table>
@@ -435,6 +477,11 @@ const menus = {
             task.data.oldstyle = ssw.checked;
             task.update();
         };
+        const smsw = el("#s_scroll input");
+        smsw.checked = animationManager.newScroll;
+        smsw.onclick = _ => {
+            animationManager.newScrollSet(smsw.checked);
+        };
 
         const asw = el("#s_autotheme input");
         asw.checked = theme.auto;
@@ -443,6 +490,9 @@ const menus = {
         };
 
         const exb = el("#settings_dial #s_data a#export");
+        const inb = el("#settings_dial #s_data a#import");
+        const del = el("#settings_dial #s_data a#delete");
+
         exb.onclick = _ => {
             const form = document.createElement("input");
             form.setAttribute("type", "text");
@@ -461,7 +511,6 @@ const menus = {
                 exb.innerText = "Export";
             }, 1500)
         };
-        const inb = el("#settings_dial #s_data a#import");
         inb.onclick = _ => {
             const input = prompt("Enter exported value");
             if (input == null || input.length == 0) return debug.log("Nothing was entered", "red")
@@ -486,21 +535,18 @@ const menus = {
                 inb.innerText = "Import";
             }, 1500);
         };
-
-        let rall = el("#settings_dial #s_clearall a");
-        rall.onclick = _ => {
-            if (!rall.classList.contains("crit")) {
-                rall.classList.add("crit");
-                rall.innerText = "Are you sure?";
-            } else {
-                task.data.list = [];
-                task.update();
-                rall.innerText = "Cleared!";
-                setTimeout(_ => {
-                    rall.classList.remove("crit");
-                    rall.innerText = "Clear all tasks";
-                }, 1500);
-            };
+        del.onclick = _ => {
+			if (confirm("Are you sure?")) {
+				task.data.list = [];
+				task.update();
+				del.classList.add("failed");
+				del.innerText = "Cleared!";
+				debug.log("Data cleared!", "#00c800");
+			}
+			setTimeout(_ => {
+				del.classList.remove("failed");
+				del.innerText = "Delete";
+			}, 1500);
         };
     }
 };
@@ -510,6 +556,8 @@ debug.log(`Build ${info.build}v${info.version}`, "#fff","#000");
 ready(_ => {
     task.initializate();
     theme.initializate();
+
+	animationManager.newScrollSet(animationManager.newScroll);
 
     document.onkeypress = e => {
         if(e.key == "Enter") {
