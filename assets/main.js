@@ -2,11 +2,11 @@ const info = {
     build: "130721",
     version: 2
 };
-if (window.location.host.includes("localhost")) document.title = "ToDo PWA Dev";
+if (location.host.includes("localhost")) document.title = "ToDo PWA Dev";
 
-const debug_default = false;
-const debug_time = true;
-const theme_auto = true;
+const debug_default = false,
+    debug_time = true,
+    theme_auto = true;
 
 const el = document.querySelector.bind(document);
 function ready(callback) {
@@ -21,11 +21,7 @@ const debug = {
     enabled: null,
     initializate() {
         this.enabled = localStorage.getItem("debug") === "true";
-        if (localStorage.getItem("debug")) {
-            this.set(this.enabled);
-        } else {
-            this.set(debug_default);
-        }
+        localStorage.getItem('debug') ? this.set(this.enabled) : this.set(debug_default);
     },
     set(arg) { //true or false
         this.enabled = arg;
@@ -51,17 +47,9 @@ const theme = {
     user: window.matchMedia("(prefers-color-scheme: dark)"),
     initializate() {
         this.auto = localStorage.getItem("theme_auto") === "true";
-        if (localStorage.getItem("theme_auto")) {
-            this.autoset(this.auto);
-        } else {
-            this.autoset(theme_auto);
-        }
+        localStorage.getItem('theme_auto') ? this.autoset(this.auto) : this.autoset(theme_auto);
         const usercheck = _ => {
-            if (theme.user.matches) {
-                this.set("dark");
-            } else {
-                this.set("light");
-            }
+            theme.user.matches ? this.set('dark') : this.set('light');
         }
         this.current = localStorage.getItem("theme");
         if ((this.current != "dark") && (this.current != "light")) {
@@ -300,9 +288,8 @@ const gui = {
         },
         close(id) {
             const divId = `${id}_dial`;
-            if(el(`#${divId}`)) el(`#${divId}`).remove();
+            if (el(`#${divId}`)) el(`#${divId}`).remove();
             else return debug.log(`No modal window with id="${id}"`, "red");
-    
         }
     }
 };
@@ -310,16 +297,17 @@ const gui = {
 const menus = {
     add() {
         const html = `
-        <h3>Add task</h3>
-        <div class="wrapper">
-            <input type="text" id="textField" placeholder="Task name">
-            <a>✔</a>
-        </div>
+            <h3>Add task</h3>
+            <div class="wrapper">
+                <input type="text" id="textField" placeholder="Task name">
+                <a>✔</a>
+            </div>
         `;
+
         gui.modal.show("add", html);
         el("#add_dial input").focus();
 
-        el("#add_dial a").onclick = _=>{
+        el("#add_dial a").onclick = _ =>{
             const value = el("#add_dial input").value;
             el("#add_dial input").value = "";
             task.add(value)
@@ -371,16 +359,16 @@ const menus = {
         const date = new Date(data.date);
         el("#manage_dial #time").innerText = `Created at: \n${date.toString().split(" GMT")[0]}`;
         
-        const edit = el("#manage_dial h3");
-        const important = el("#manage_dial .star");
-        const complete = el("#manage_dial .complete");
-        const remove = el("#manage_dial .delete");
+        const edit = el("#manage_dial h3"),
+            important = el("#manage_dial .star"),
+            complete = el("#manage_dial .complete"),
+            remove = el("#manage_dial .delete");
+
         function render() {
-            if (data.important) {important.classList.add("checked")}
-            else {important.classList.remove("checked")};
-            if (data.completed) {complete.classList.add("checked")}
-            else {complete.classList.remove("checked")};
+            data.important ? important.classList.add("checked") : important.classList.remove("checked");
+            data.completed ? complete.classList.add("checked") : complete.classList.remove("checked");
         };
+
         render();
         
         let old = data.task;
@@ -482,6 +470,7 @@ const menus = {
             task.data.oldstyle = ssw.checked;
             task.update();
         };
+
         const smsw = el("#s_scroll input");
         smsw.checked = animationManager.newScroll;
         smsw.onclick = _ => {
@@ -494,9 +483,9 @@ const menus = {
             theme.autoset(asw.checked);
         };
 
-        const exb = el("#settings_dial #s_data a#export");
-        const inb = el("#settings_dial #s_data a#import");
-        const del = el("#settings_dial #s_data a#delete");
+        const exb = el("#settings_dial #s_data a#export"),
+            inb = el("#settings_dial #s_data a#import"),
+            del = el("#settings_dial #s_data a#delete");
 
         exb.onclick = _ => {
             const form = document.createElement("input");
@@ -564,8 +553,8 @@ ready(_ => {
 
 	animationManager.newScrollSet(animationManager.newScroll);
 
-    document.onkeypress = e => {
-        if(e.key == "Enter") {
+    document.onkeydown = e => {
+        if (e.key == "Enter") {
             debug.log("Pressed enter");
             if (el("#add_dial")) el("#add_dial a").click();
             if (el("#manage_dial")) el("#manage_dial h3").blur();
@@ -573,8 +562,9 @@ ready(_ => {
     };
 
     window.onresize = _ => {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        const width = window.innerWidth,
+            height = window.innerHeight;
+
         if (width < 500) window.resizeTo(500, height);
         if (height < 750) window.resizeTo(width, 750);
     }
